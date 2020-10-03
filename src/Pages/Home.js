@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles.css";
 import { API } from "../backend";
-import Header from "../building_blocks/Header/Header";
+import Header from "../building_blocks/Header";
 import Slider from "../building_blocks/Slider";
 import NewProduct from "../building_blocks/NewProduct";
 import Gallery from "../building_blocks/Gallery";

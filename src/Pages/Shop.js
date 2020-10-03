@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../building_blocks/Header/Header";
+import Header from "../building_blocks/Header";
 import HeroSection from "../building_blocks/HeroSection";
 import Item from "../building_blocks/Item";
 import ShopMethod from "../building_blocks/ShopMethod";
