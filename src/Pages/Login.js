@@ -1,11 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../building_blocks/Header";
 import HeroSection from "../building_blocks/HeroSection";
 import ShopMethod from "../building_blocks/ShopMethod";
 import Footer from "../building_blocks/Footer";
-
 import Sidebar from "../building_blocks/Sidebar";
+//Importing api call function
+import { signin, authenticate, isAutheticated } from "../auth/helper/index";
+
 const Login = () => {
+  const [values, setValues] = useState({
+    email: "",
+    password: "",
+    error: "",
+    didRedirect: false,
+    loading: false,
+  });
+
+  const { email, password, error, didRedirect, loading } = values;
+  const { user } = isAutheticated();
+
+  const handleChange = (name) => (event) => {
+    setValues({ ...values, error: false, [name]: event.target.value });
+  };
+
+  const successMessage = () => (
+    <div
+      className="alert alert-success"
+      style={{ display: success ? "" : "none" }}
+    >
+      Sign Up Successful Please <Link to="/signin">Log In</Link> here
+    </div>
+  );
+
+  const errorMessage = () => (
+    <div
+      className="alert alert-danger"
+      style={{ display: error ? "" : "none" }}
+    >
+      {error}
+    </div>
+  );
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    setValues({ ...values, error: false, loading: true });
+    signin({ email, password })
+      .then((data) => {
+        if (data.error) {
+          setValues({ ...values, error: data.error, loading: false });
+        } else {
+          authenticate(data, () => {
+            setValues({
+              ...values,
+              didRedirect: true,
+            });
+          });
+        }
+      })
+      .catch(console.log("Sigin Request failed"));
+  };
   return (
     <>
       <Header />
@@ -34,6 +87,8 @@ const Login = () => {
                         id="email"
                         name="email"
                         placeholder="Email"
+                        onClick={handleChange("email")}
+                        value={email}
                         required
                       />
                     </div>
@@ -44,6 +99,8 @@ const Login = () => {
                         id="password"
                         name="password"
                         placeholder="Password"
+                        onClick={handleChange("password")}
+                        value={password}
                         required
                       />
                     </div>
@@ -52,7 +109,12 @@ const Login = () => {
                         <input type="checkbox" id="f-option" name="selector" />
                         <label for="f-option">Remember me</label>
                       </div> */}
-                      <button type="submit" value="submit" className="btn_3">
+                      <button
+                        type="submit"
+                        onClick={onSubmit}
+                        value="submit"
+                        className="btn_3"
+                      >
                         Sign in
                       </button>
                       <a className="lost_pass" href="#">
