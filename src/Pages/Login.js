@@ -4,6 +4,7 @@ import HeroSection from "../building_blocks/HeroSection";
 import ShopMethod from "../building_blocks/ShopMethod";
 import Footer from "../building_blocks/Footer";
 import Sidebar from "../building_blocks/Sidebar";
+import { Link, Redirect } from "react-router-dom";
 //Importing api call function
 import { signin, authenticate, isAutheticated } from "../auth/helper/index";
 
@@ -23,14 +24,27 @@ const Login = () => {
     setValues({ ...values, error: false, [name]: event.target.value });
   };
 
-  const successMessage = () => (
-    <div
-      className="alert alert-success"
-      style={{ display: success ? "" : "none" }}
-    >
-      Sign Up Successful Please <Link to="/signin">Log In</Link> here
-    </div>
-  );
+  const performRedirect = () => {
+    if (didRedirect) {
+      if (user && user.role == 1) {
+        return <p>Redirect to admin</p>;
+      } else {
+        return <p>Redirect to user </p>;
+      }
+    }
+    if (isAutheticated()) {
+      return <Redirect to="/" />;
+    }
+  };
+  const loadingMessage = () => {
+    return (
+      loading && (
+        <div className="alert alert-info">
+          <h2>Loading...</h2>
+        </div>
+      )
+    );
+  };
 
   const errorMessage = () => (
     <div
@@ -44,6 +58,7 @@ const Login = () => {
   const onSubmit = (event) => {
     event.preventDefault();
     setValues({ ...values, error: false, loading: true });
+    console.log({ email, password });
     signin({ email, password })
       .then((data) => {
         if (data.error) {
@@ -79,6 +94,8 @@ const Login = () => {
                     Welcome Back ! <br />
                     Please Sign in now
                   </h3>
+                  {loadingMessage}
+                  {errorMessage}
                   <form className="row contact_form" action="#" method="post">
                     <div className="col-md-12 form-group p_star">
                       <input
@@ -87,7 +104,7 @@ const Login = () => {
                         id="email"
                         name="email"
                         placeholder="Email"
-                        onClick={handleChange("email")}
+                        onChange={handleChange("email")}
                         value={email}
                         required
                       />
@@ -99,7 +116,7 @@ const Login = () => {
                         id="password"
                         name="password"
                         placeholder="Password"
-                        onClick={handleChange("password")}
+                        onChange={handleChange("password")}
                         value={password}
                         required
                       />
@@ -117,10 +134,14 @@ const Login = () => {
                       >
                         Sign in
                       </button>
+                      {/* <p className="text-white text-center">
+                        {JSON.stringify(values)}
+                      </p> */}
                       <a className="lost_pass" href="#">
                         forget password?
                       </a>
                     </div>
+                    {performRedirect}
                   </form>
                 </div>
               </div>
